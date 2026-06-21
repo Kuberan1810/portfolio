@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { HambergerMenu } from "iconsax-react";
 import { X } from "lucide-react"
@@ -15,6 +15,9 @@ const navLinks = [
 
 export default function Header() {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState("home");
+    const [sliderStyle, setSliderStyle] = useState({ left: 0, width: 0 });
+    const navRef = useRef<HTMLDivElement>(null);
 
     // Prevent body scroll when menu is open
     useEffect(() => {
@@ -22,52 +25,116 @@ export default function Header() {
         return () => { document.body.style.overflow = ""; };
     }, [menuOpen]);
 
+    // IntersectionObserver scroll spy to track active section
+    useEffect(() => {
+        if (window.location.pathname !== "/") {
+            const path = window.location.pathname.replace("/", "");
+            setActiveSection(path || "home");
+            return;
+        }
+
+        const sections = ["home", "about", "skills", "projects", "experience", "contact"];
+        const observers = sections.map((id) => {
+            const el = document.getElementById(id);
+            if (!el) return null;
+
+            const observer = new IntersectionObserver(
+                ([entry]) => {
+                    if (entry.isIntersecting) {
+                        setActiveSection(id);
+                    }
+                },
+                {
+                    rootMargin: "-45% 0px -45% 0px", // Trigger when the section occupies the center of the screen
+                }
+            );
+            observer.observe(el);
+            return { observer, el };
+        });
+
+        return () => {
+            observers.forEach((obs) => {
+                if (obs) obs.observer.unobserve(obs.el);
+            });
+        };
+    }, []);
+
+    // Track active child's position and width to slide the pill
+    useEffect(() => {
+        const updateSlider = () => {
+            if (!navRef.current) return;
+            const activeEl = navRef.current.querySelector('[data-active="true"]') as HTMLElement;
+            if (activeEl) {
+                setSliderStyle({
+                    left: activeEl.offsetLeft,
+                    width: activeEl.offsetWidth,
+                });
+            }
+        };
+
+        // Delay slightly to ensure layout elements are fully rendered/positioned
+        const timer = setTimeout(updateSlider, 50);
+        window.addEventListener("resize", updateSlider);
+
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener("resize", updateSlider);
+        };
+    }, [activeSection]);
+
     const closeMenu = () => setMenuOpen(false);
 
     return (
         <>
             {/* ── Desktop Pill Navbar ── */}
             <nav className="fixed top-[40px] left-1/2 z-50 -translate-x-1/2 hidden md:block">
-                <div className="flex items-center gap-2 rounded-full bg-[#1A1A1A10] p-2 border border-[#1a1a1a07] backdrop-blur-xs">
-                    {navLinks.map((link) => (
-                        <NavLink
-                            key={link.path}
-                            to={link.path}
-                            onClick={(e) => {
-                                if (window.location.pathname === "/") {
-                                    e.preventDefault();
-                                    const targetId = link.path === "/" ? "home" : link.path.replace("/", "");
-                                    const element = document.getElementById(targetId);
-                                    if (element) {
-                                        element.scrollIntoView({ behavior: "smooth" });
+                <div
+                    ref={navRef}
+                    className="relative flex items-center gap-2 rounded-full bg-[#1A1A1A10] p-2 border border-[#1a1a1a07] backdrop-blur-xs"
+                >
+                    {/* Sliding Background Pill */}
+                    <div
+                        className="absolute top-2 bottom-2 bg-[#1A1A1A] rounded-full transition-[left,width] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                        style={{
+                            left: `${sliderStyle.left}px`,
+                            width: `${sliderStyle.width}px`,
+                            boxShadow: "inset 0 2px 8px rgba(0,0,0,0.6), inset 0 1px 3px rgba(0,0,0,0.4)"
+                        }}
+                    >
+                        {/* Glow effect on the active sliding pill */}
+                        <span
+                            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20"
+                            style={{ width: "40px", height: "40px", filter: "blur(14px)" }}
+                        />
+                    </div>
+
+                    {navLinks.map((link) => {
+                        const targetId = link.path === "/" ? "home" : link.path.replace("/", "");
+                        const isActive = activeSection === targetId;
+                        return (
+                            <a
+                                key={link.path}
+                                href={link.path}
+                                data-active={isActive}
+                                onClick={(e) => {
+                                    if (window.location.pathname === "/") {
+                                        e.preventDefault();
+                                        const element = document.getElementById(targetId);
+                                        if (element) {
+                                            element.scrollIntoView({ behavior: "smooth" });
+                                        }
                                     }
-                                }
-                            }}
-                            className={({ isActive }) =>
-                                `relative overflow-hidden rounded-full px-7.5 py-2.5 text-base font-medium transition-all duration-300 ${isActive
-                                    ? "bg-[#1A1A1A] text-white"
-                                    : "text-[#1a1a1a] hover:bg-[#1a1a1a10] hover:text-[#1a1a1a] hover:backdrop-blur-3xl"
-                                }`
-                            }
-                            style={({ isActive }) =>
-                                isActive
-                                    ? { boxShadow: "inset 0 2px 8px rgba(0,0,0,0.6), inset 0 1px 3px rgba(0,0,0,0.4)" }
-                                    : {}
-                            }
-                        >
-                            {({ isActive }) => (
-                                <>
-                                    {isActive && (
-                                        <span
-                                            className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20"
-                                            style={{ width: "40px", height: "40px", filter: "blur(14px)" }}
-                                        />
-                                    )}
-                                    <span className="relative z-10">{link.name}</span>
-                                </>
-                            )}
-                        </NavLink>
-                    ))}
+                                }}
+                                className={`relative z-10 overflow-hidden rounded-full px-7.5 py-2.5 text-base font-medium transition-colors duration-400 ${
+                                    isActive
+                                        ? "text-white"
+                                        : "text-[#1a1a1a] hover:bg-[#1a1a1a10] hover:text-[#1a1a1a] hover:backdrop-blur-3xl"
+                                }`}
+                            >
+                                <span className="relative z-10">{link.name}</span>
+                            </a>
+                        );
+                    })}
                 </div>
             </nav>
 
@@ -79,7 +146,6 @@ export default function Header() {
                         src={Profile}
                         alt="Profile"
                         className="w-10 h-10 rounded-full object-cover border border-[#1a1a1a10]"
-
                     />
                     <div className="leading-tight">
                         <p className="text-sm font-semibold text-[#1a1a1a]">Kuberan</p>
@@ -118,7 +184,6 @@ export default function Header() {
                             src={Profile}
                             alt="Profile"
                             className="w-10 h-10 rounded-full object-cover border border-[#1a1a1a10]"
-
                         />
                         <div className="leading-tight">
                             <p className="text-sm font-semibold text-[#1a1a1a]">Kuberan</p>
@@ -139,36 +204,38 @@ export default function Header() {
 
                 {/* Nav links */}
                 <nav className="flex flex-col items-center justify-center flex-1 gap-2 px-6">
-                    {navLinks.map((link, i) => (
-                        <NavLink
-                            key={link.path}
-                            to={link.path}
-                            onClick={(e) => {
-                                if (window.location.pathname === "/") {
-                                    e.preventDefault();
-                                    const targetId = link.path === "/" ? "home" : link.path.replace("/", "");
-                                    const element = document.getElementById(targetId);
-                                    if (element) {
-                                        element.scrollIntoView({ behavior: "smooth" });
+                    {navLinks.map((link, i) => {
+                        const targetId = link.path === "/" ? "home" : link.path.replace("/", "");
+                        const isActive = activeSection === targetId;
+                        return (
+                            <a
+                                key={link.path}
+                                href={link.path}
+                                onClick={(e) => {
+                                    if (window.location.pathname === "/") {
+                                        e.preventDefault();
+                                        const element = document.getElementById(targetId);
+                                        if (element) {
+                                            element.scrollIntoView({ behavior: "smooth" });
+                                        }
                                     }
-                                }
-                                closeMenu();
-                            }}
-                            className={({ isActive }) =>
-                                `w-full text-center text-5xl font-semibold py-3 transition-all duration-200 ${isActive
-                                    ? "text-[#1a1a1a]"
-                                    : "text-[#1a1a1a50] hover:text-[#1a1a1a]"
-                                }`
-                            }
-                            style={{
-                                transitionDelay: menuOpen ? `${i * 60}ms` : "0ms",
-                                transform: menuOpen ? "translateY(0)" : "translateY(20px)",
-                                opacity: menuOpen ? 1 : 0,
-                            }}
-                        >
-                            {link.name}
-                        </NavLink>
-                    ))}
+                                    closeMenu();
+                                }}
+                                className={`w-full text-center text-5xl font-semibold py-3 transition-all duration-200 ${
+                                    isActive
+                                        ? "text-[#1a1a1a]"
+                                        : "text-[#1a1a1a50] hover:text-[#1a1a1a]"
+                                }`}
+                                style={{
+                                    transitionDelay: menuOpen ? `${i * 60}ms` : "0ms",
+                                    transform: menuOpen ? "translateY(0)" : "translateY(20px)",
+                                    opacity: menuOpen ? 1 : 0,
+                                }}
+                            >
+                                {link.name}
+                            </a>
+                        );
+                    })}
                 </nav>
 
                 {/* Footer */}

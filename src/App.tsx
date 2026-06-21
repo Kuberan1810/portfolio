@@ -15,9 +15,9 @@ function App() {
     <BrowserRouter>
       {/* Full-height vertical border lines — fixed */}
       <div className="pointer-events-none fixed inset-0 z-40">
-        {/* Vertical side lines — desktop only */}
-        <div className="hidden md:block absolute top-0 bottom-0 left-[120px] w-px bg-[#1a1a1a08]" />
-        <div className="hidden md:block absolute top-0 bottom-0 right-[120px] w-px bg-[#1a1a1a08]" />
+        {/* Vertical side lines — desktop & mobile */}
+        <div className="absolute top-0 bottom-0 left-[20px] md:left-[120px] w-px bg-[#1a1a1a08]" />
+        <div className="absolute top-0 bottom-0 right-[20px] md:right-[120px] w-px bg-[#1a1a1a08]" />
       </div>
 
       <Header />

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import BrushStroke from "../../../assets/images/hallo.svg";
 import ProfileImg from "../../../assets/images/whoAm.svg";
-import Linkdin from "../../../assets/images/linkdin.svg"
+// import Linkdin from "../../../assets/images/linkdin.svg"
 import { Instagram, Dribbble, ArrowDown3 } from "iconsax-react";
 
 interface AccordionItem {

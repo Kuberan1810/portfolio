@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import BrushStroke from "../../../assets/images/hallo.svg";
 import  Lightening from "../../../assets/images/lighting.svg";
-import {Zap} from "lucide-react"
 
 /* ─── Types ─────────────────────────────────────────────────── */
 interface PillProps {

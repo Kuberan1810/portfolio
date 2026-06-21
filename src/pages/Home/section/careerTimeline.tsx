@@ -1,6 +1,6 @@
 import { Calendar2 } from "iconsax-react";
 import BrushStroke from "../../../assets/images/skill-b.svg";
-import Line from "../../../assets/images/line.svg";
+// import Line from "../../../assets/images/line.svg"
 
 interface TimelineEvent {
     id: string;
