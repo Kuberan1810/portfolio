@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { NavLink } from "react-router-dom";
 import { HambergerMenu } from "iconsax-react";
 import { X } from "lucide-react"
 import Profile from "../assets/images/profile-pic.svg"

@@ -7,7 +7,6 @@ import Projects from "./pages/Projects/Projects"
 import Skills from "./pages/Skills/Skills"
 import Contact from "./pages/Contact/Contact"
 import Header from "./components/Header"
-import HorizontalLine from "./components/HorizontalLine"
 
 
 function App() {
