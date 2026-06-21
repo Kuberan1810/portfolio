@@ -98,7 +98,7 @@ export const Hero = () => {
                     {/* View Projects — filled dark pill */}
                     <a
                         href="/projects"
-                        className="flex items-center justify-center rounded-full bg-[#1A1A1A] text-white px-6 md:px-7 py-3.5 md:py-4.5 text-sm md:text-base select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.15),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#2A2A2A]"
+                        className="flex items-center justify-center rounded-full bg-[#1A1A1A] text-white px-6 md:px-7 py-3.5 md:py-4.5 text-base md:text-lg font-medium select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.15),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#2A2A2A]"
                     >
                         View Projects
                     </a>
@@ -107,7 +107,7 @@ export const Hero = () => {
                     <a
                         href="/resume.pdf"
                         download
-                        className="flex items-center justify-center rounded-full border border-[#1a1a1a10] bg-[#F5F5F5] text-[#1A1A1A] px-6 md:px-7 py-3.5 md:py-4.5 text-sm md:text-base select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.05),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#EFEFEF]"
+                        className="flex items-center justify-center rounded-full border border-[#1a1a1a10] bg-[#F5F5F5] text-[#1A1A1A] px-6 md:px-7 py-3.5 md:py-4.5 text-base md:text-lg font-medium select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.05),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#EFEFEF]"
                     >
                         Download Resume
                     </a>

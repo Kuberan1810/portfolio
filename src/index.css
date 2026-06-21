@@ -118,6 +118,11 @@
   font-family: "Urbanist", sans-serif;
 }
 
+.font-poppins {
+  font-family: "Poppins", sans-serif;
+
+}
+
 body {
   font-family: "Urbanist", sans-serif;
 }
@@ -148,4 +153,18 @@ body {
 .section-gap {
   margin-block: 100px;
 
+}
+
+.border-down {
+  border-top: 1px solid #1a1a1a08;
+  animation-duration: 700ms;
+}
+
+.shadow-soft {
+  box-shadow: 0 20px 40px 0 rgba(0, 0, 0, .12),
+    inset 0 4px 6px 0 rgba(255, 255, 255, .35);
+}
+
+html {
+  scroll-behavior: smooth;
 }

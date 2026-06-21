@@ -7,8 +7,8 @@ import Profile from "../assets/images/profile-pic.svg"
 const navLinks = [
     { name: "Home", path: "/" },
     { name: "About", path: "/about" },
-    { name: "Works", path: "/projects" },
-    { name: "Services", path: "/skills" },
+    { name: "Skills", path: "/skills" },
+    { name: "Projects", path: "/projects" },
     { name: "Experience", path: "/experience" },
     { name: "Contact", path: "/contact" },
 ];
@@ -33,7 +33,16 @@ export default function Header() {
                         <NavLink
                             key={link.path}
                             to={link.path}
-                            end={link.path === "/"}
+                            onClick={(e) => {
+                                if (window.location.pathname === "/") {
+                                    e.preventDefault();
+                                    const targetId = link.path === "/" ? "home" : link.path.replace("/", "");
+                                    const element = document.getElementById(targetId);
+                                    if (element) {
+                                        element.scrollIntoView({ behavior: "smooth" });
+                                    }
+                                }
+                            }}
                             className={({ isActive }) =>
                                 `relative overflow-hidden rounded-full px-7.5 py-2.5 text-base font-medium transition-all duration-300 ${isActive
                                     ? "bg-[#1A1A1A] text-white"
@@ -134,7 +143,17 @@ export default function Header() {
                         <NavLink
                             key={link.path}
                             to={link.path}
-                            onClick={closeMenu}
+                            onClick={(e) => {
+                                if (window.location.pathname === "/") {
+                                    e.preventDefault();
+                                    const targetId = link.path === "/" ? "home" : link.path.replace("/", "");
+                                    const element = document.getElementById(targetId);
+                                    if (element) {
+                                        element.scrollIntoView({ behavior: "smooth" });
+                                    }
+                                }
+                                closeMenu();
+                            }}
                             className={({ isActive }) =>
                                 `w-full text-center text-5xl font-semibold py-3 transition-all duration-200 ${isActive
                                     ? "text-[#1a1a1a]"
