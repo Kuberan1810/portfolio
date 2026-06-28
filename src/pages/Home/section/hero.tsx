@@ -1,6 +1,12 @@
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import HeroDp from "../../../assets/images/heroDp.svg";
 import BrushStroke from "../../../assets/images/Vector.svg";
 import HeroBg from "../../../assets/images/heroBg.svg";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /* ─── Inline Avatar ─────────────────────────────────────────── */
 interface AvatarProps {
@@ -25,29 +31,90 @@ const BrushUnderline = () => (
 
 /* ─── Hero Section ───────────────────────────────────────────── */
 export const Hero = () => {
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useGSAP(() => {
+        // Page load timeline
+        const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+        tl.fromTo(".hero-bg", 
+            { opacity: 0, scale: 1.1 }, 
+            { opacity: 1, scale: 1, duration: 2.0 }
+        );
+
+        tl.fromTo(".hero-title-line",
+            { y: 60, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1.4, stagger: 0.18 },
+            "-=1.5"
+        );
+
+        tl.fromTo(".hero-annotation",
+            { opacity: 0, rotation: 0, scale: 0.9, filter: "blur(10px)" },
+            { opacity: 1, rotation: 7, scale: 1, filter: "blur(0px)", duration: 1.2, ease: "back.out(1.4)" },
+            "-=1.2"
+        );
+
+        tl.fromTo(".hero-subtitle",
+            { y: 25, opacity: 0 },
+            { y: 0, opacity: 1, duration: 1.2 },
+            "-=1.0"
+        );
+
+        tl.fromTo(".hero-btn",
+            { y: 20, opacity: 0, scale: 0.96 },
+            { y: 0, opacity: 1, scale: 1, duration: 1.0, stagger: 0.15 },
+            "-=0.8"
+        );
+
+        tl.fromTo(".hero-badge",
+            { scale: 0.8, opacity: 0 },
+            { scale: 1, opacity: 1, duration: 1.0 },
+            "-=0.7"
+        );
+
+        // Scroll parallax effect
+        gsap.to([".hero-content-wrapper", ".hero-annotation-wrapper"], {
+            scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top top",
+                end: "bottom top",
+                scrub: 1.5
+            },
+            y: 80,
+            opacity: 0,
+            ease: "none"
+        });
+
+    }, { scope: containerRef });
+
     return (
-        <section className="relative flex min-h-screen flex-col items-center justify-center text-center px-5 pt-[120px] pb-16 md:pt-[250px] md:pb-25 md:px-10">
+        <section 
+            ref={containerRef}
+            className="relative flex min-h-screen flex-col items-center justify-center text-center px-5 pt-[120px] pb-16 md:pt-[250px] md:pb-25 md:px-10"
+        >
 
             {/* ── Background image ── */}
             <img
                 src={HeroBg}
                 alt=""
                 aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none z-0"
+                className="hero-bg absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none z-0"
             />
 
-            {/* ── Content (above bg) ── */}
-            <div className="z-10 flex flex-col items-center w-full">
-
-                {/* ── Handwritten annotation — hidden on mobile, shown on md+ ── */}
+            {/* ── Handwritten annotation wrapper — hidden on mobile, shown on md+ ── */}
+            <div className="hero-annotation-wrapper hidden md:block absolute right-100 top-[180px] z-10">
                 <div
-                    className="hidden md:block absolute right-100 caveat top-[180px] text-[20px] text-[#1a1a1a99] leading-snug font-regular max-w-fit text-start"
+                    className="hero-annotation caveat text-[20px] text-[#1a1a1a99] leading-snug font-regular max-w-fit text-start"
                     style={{ transform: "rotate(7deg)" }}
                 >
                     Creating user-first experiences
                     <br />
                     for web and mobile.
                 </div>
+            </div>
+
+            {/* ── Content (above bg) ── */}
+            <div className="hero-content-wrapper z-10 flex flex-col items-center w-full">
 
                 {/* ── Main heading ── */}
                 <div
@@ -55,7 +122,7 @@ export const Hero = () => {
                     style={{ fontSize: "clamp(36px, 7vw, 82px)" }}
                 >
                     {/* Line 1 */}
-                    <div className="flex items-center justify-center flex-wrap gap-x-1">
+                    <div className="hero-title-line flex items-center justify-center flex-wrap gap-x-1">
                         <span>I'm&nbsp;</span>
                         <span className="text-[#1A1A1A90]">Kuberan&nbsp;</span>
                         <Avatar
@@ -66,7 +133,7 @@ export const Hero = () => {
                     </div>
 
                     {/* Line 2 */}
-                    <div className="flex items-center justify-center flex-wrap gap-x-1">
+                    <div className="hero-title-line flex items-center justify-center flex-wrap gap-x-1">
                         <span>a&nbsp;UI/UX&nbsp;</span>
                         <Avatar
                             className="w-[0.75em] sm:w-fit h-[0.75em] sm:h-fit"
@@ -76,7 +143,7 @@ export const Hero = () => {
                     </div>
 
                     {/* Line 3 */}
-                    <div className="flex items-center justify-center flex-wrap gap-x-1">
+                    <div className="hero-title-line flex items-center justify-center flex-wrap gap-x-1">
                         <span className="whitespace-nowrap">Frontend&nbsp;&amp;&nbsp;</span>
                         <span className="text-[#1a1a1a90] whitespace-nowrap">React Native&nbsp;</span>
                         <span className="relative top-[0.12em] inline-block whitespace-nowrap">
@@ -87,7 +154,7 @@ export const Hero = () => {
                 </div>
 
                 {/* ── Subtitle ── */}
-                <p className="mx-auto mt-6 max-w-[600px] md:max-w-[990px] text-[16px] md:text-[22px] text-[#1a1a1a70] font-medium px-2 md:px-0">
+                <p className="hero-subtitle mx-auto mt-6 max-w-[600px] md:max-w-[990px] text-[16px] md:text-[22px] text-[#1a1a1a70] font-medium px-2 md:px-0">
                     I design intuitive user experiences and build high-performance web
                     and mobile applications using modern technologies.
                 </p>
@@ -98,7 +165,7 @@ export const Hero = () => {
                     {/* View Projects — filled dark pill */}
                     <a
                         href="/projects"
-                        className="flex items-center justify-center rounded-full bg-[#1A1A1A] text-white px-6 md:px-7 py-3.5 md:py-4.5 text-base md:text-lg font-medium select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.15),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#2A2A2A]"
+                        className="hero-btn flex items-center justify-center rounded-full bg-[#1A1A1A] text-white px-6 md:px-7 py-3.5 md:py-4.5 text-base md:text-lg font-medium select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.15),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#2A2A2A]"
                     >
                         View Projects
                     </a>
@@ -107,14 +174,14 @@ export const Hero = () => {
                     <a
                         href="/resume.pdf"
                         download
-                        className="flex items-center justify-center rounded-full border border-[#1a1a1a10] bg-[#F5F5F5] text-[#1A1A1A] px-6 md:px-7 py-3.5 md:py-4.5 text-base md:text-lg font-medium select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.05),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#EFEFEF]"
+                        className="hero-btn flex items-center justify-center rounded-full border border-[#1a1a1a10] bg-[#F5F5F5] text-[#1A1A1A] px-6 md:px-7 py-3.5 md:py-4.5 text-base md:text-lg font-medium select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.05),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#EFEFEF]"
                     >
                         Download Resume
                     </a>
                 </div>
 
                 {/* ── Open to Work badge ── */}
-                <div className="caveat inline-flex items-center gap-2 text-[18px] md:text-[24px] text-[#1a1a1a70] font-medium">
+                <div className="hero-badge caveat inline-flex items-center gap-2 text-[18px] md:text-[24px] text-[#1a1a1a70] font-medium">
                     <span
                         className="inline-block w-2.5 h-2.5 rounded-full bg-[#13B879] shrink-0"
                         style={{ boxShadow: "0 0 6px #13B879" }}

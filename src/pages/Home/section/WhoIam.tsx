@@ -1,7 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import BrushStroke from "../../../assets/images/hallo.svg";
 import ProfileImg from "../../../assets/images/whoAm.svg";
 import { Instagram, Dribbble, ArrowDown3 } from "iconsax-react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface AccordionItem {
     id: string;
@@ -12,6 +17,7 @@ interface AccordionItem {
 
 export const WhoIam = () => {
     const [openId, setOpenId] = useState<string | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const toggleAccordion = (id: string) => {
         setOpenId(openId === id ? null : id);
@@ -50,13 +56,82 @@ export const WhoIam = () => {
         }
     ];
 
+    useGSAP(() => {
+        const tl = gsap.timeline({
+            defaults: { ease: "power4.out" },
+            scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top 95%",
+                end: "bottom 40%",
+                scrub: 2.0,
+            }
+        });
+
+        // Heading block
+        tl.fromTo(".who-tag",
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 1.2 }
+        );
+        tl.fromTo(".who-brush",
+            { clipPath: "polygon(0 0, 0 0, 0 100%, 0% 100%)" },
+            { clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)", duration: 0.8, ease: "power3.inOut" },
+            "-=0.9"
+        );
+        tl.fromTo(".who-annotation",
+            { opacity: 0, scale: 0.85, rotation: 0 },
+            { opacity: 1, scale: 1, rotation: 6, duration: 1.2, ease: "back.out(1.4)" },
+            "-=0.6"
+        );
+        tl.fromTo(".who-title",
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 1.2 },
+            "-=0.8"
+        );
+
+        // Left column: Profile card
+        tl.fromTo(".who-profile-img",
+            { opacity: 0, scale: 0.94, rotation: 0 },
+            { opacity: 1, scale: 1, rotation: -2, duration: 1.2 },
+            "-=0.9"
+        );
+
+        // Right column: Description (in parallel with profile img)
+        tl.fromTo(".who-desc",
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 1.2 },
+            "-=1.2"
+        );
+
+        // Left column: Socials
+        tl.fromTo(".who-social-btn",
+            { opacity: 0, scale: 0.85, y: 25 },
+            { opacity: 1, scale: 1, y: 0, duration: 0.9, stagger: 0.15, ease: "back.out(1.6)" },
+            "-=0.8"
+        );
+        tl.fromTo(".who-profile-info",
+            { opacity: 0, x: 20 },
+            { opacity: 1, x: 0, duration: 0.9 },
+            "-=0.8"
+        );
+
+        // Right column: Accordion (in parallel with socials)
+        tl.fromTo(".who-accordion-item",
+            { opacity: 0, y: 40 },
+            { opacity: 1, y: 0, duration: 1.0, stagger: 0.15 },
+            "-=1.5"
+        );
+    }, { scope: containerRef });
+
     return (
-        <section className="relative w-full px-5 md:px-[120px] py-20 md:py-28 overflow-hidden font-urbanist bg-[#fcfcfc]">
+        <section 
+            ref={containerRef}
+            className="relative w-full px-5 md:px-[120px] py-20 md:py-28 overflow-hidden font-urbanist bg-[#fcfcfc]"
+        >
             {/* ── Heading block ── */}
             <div className="relative w-full flex flex-col items-center mb-12 md:mb-16">
 
                 {/* ── Subtitle / greeting ── */}
-                <div className="instrument-serif-regular-italic text-[#1a1a1a] text-[28px] md:text-[40px] mb-4 tracking-tight">
+                <div className="who-tag instrument-serif-regular-italic text-[#1a1a1a] text-[28px] md:text-[40px] mb-4 tracking-tight">
                     <span className="text-[#1a1a1a]">/</span>
                     <span className="relative inline-block">
                         Who Am I
@@ -64,14 +139,14 @@ export const WhoIam = () => {
                             src={BrushStroke}
                             alt=""
                             aria-hidden="true"
-                            className="absolute -left-2 bottom-[-6px] w-full pointer-events-none select-none"
+                            className="who-brush absolute -left-2 bottom-[-6px] w-full pointer-events-none select-none"
                         />
                     </span>
                 </div>
 
                 {/* ── Floating annotation ── */}
                 <div
-                    className="hidden md:block absolute right-[10%] top-6 caveat text-[20px] text-[#1a1a1a70] leading-tight text-start pointer-events-none select-none"
+                    className="who-annotation hidden md:block absolute right-[10%] top-6 caveat text-[20px] text-[#1a1a1a70] leading-tight text-start pointer-events-none select-none"
                     style={{ transform: "rotate(6deg)" }}
                 >
                     Driven by design,
@@ -80,7 +155,7 @@ export const WhoIam = () => {
                 </div>
 
                 {/* ── Main title ── */}
-                <h2 className="text-center font-normal leading-tight tracking-tight text-[32px] md:text-[54px] max-w-[800px]">
+                <h2 className="who-title text-center font-normal leading-tight tracking-tight text-[32px] md:text-[54px] max-w-[800px]">
                     Building Digital Experiences <span className="text-[#1a1a1a50]">Since 2025</span>
                 </h2>
             </div>
@@ -93,7 +168,7 @@ export const WhoIam = () => {
 
                     {/* Tilt container */}
                     <div
-                        className="-rotate-[2deg] "
+                        className="who-profile-img -rotate-[2deg] "
                     >
                         <img
                             src={ProfileImg}
@@ -110,7 +185,7 @@ export const WhoIam = () => {
                                 href="https://dribbble.com"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="rounded-full border border-[#1a1a1a10] bg-[#F5F5F5] text-[#1A1A1A] p-4 select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.05),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#EFEFEF]"
+                                className="who-social-btn rounded-full border border-[#1a1a1a10] bg-[#F5F5F5] text-[#1A1A1A] p-4 select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.05),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#EFEFEF]"
                             >
                                 <Dribbble size={26} color="#1a1a1a" />
                             </a>
@@ -118,25 +193,24 @@ export const WhoIam = () => {
                                 href="https://www.linkedin.com/in/kuberan-s-145439296/"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="rounded-full bg-[#1A1A1A] text-white px-6 md:px-7 py-3.5 md:py-4 text-sm md:text-base select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.15),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#2A2A2A]"
+                                className="who-social-btn rounded-full bg-[#1A1A1A] text-white px-6 md:px-7 py-3.5 md:py-4 text-sm md:text-base select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.15),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.15),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#2A2A2A]"
                             >
-                                {/* <img src={Linkdin} alt="Linkdin" /> */}
                                 <p className="text-white  text-xl font-bold" >in</p>
                             </a>
                             <a
                                 href="https://instagram.com"
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-[#1a1a1a70] hover:text-[#1a1a1a] transition-colors rounded-full border border-[#1a1a1a10] bg-[#F5F5F5] text-[#1A1A1A] p-4 select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.05),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#EFEFEF]"
+                                className="who-social-btn text-[#1a1a1a70] hover:text-[#1a1a1a] transition-colors rounded-full border border-[#1a1a1a10] bg-[#F5F5F5] text-[#1A1A1A] p-4 select-none transition-all duration-500 ease-in-out overflow-hidden relative shadow-[0_12px_12px_rgba(0,0,0,0.05),inset_0_4px_6px_rgba(255,255,255,0.35)] hover:shadow-[0_2px_4px_rgba(0,0,0,0.05),inset_0_6px_8px_rgba(255,255,255,0.35)] hover:bg-[#EFEFEF]"
                             >
                                 <Instagram size={26} color="#1a1a1a" />
                             </a>
                         </div>
 
                         {/* Name & Title */}
-                        <div className="text-right">
+                        <div className="who-profile-info text-right">
                             <p className="text-[20px] font-semibold text-[#1a1a1a]">Kuberan S</p>
-                            <p className="text-[15px] text-[#1a1a1a90]">UI/UX Designer & Frontend Developer</p>
+                            <p className="text-[15px] text-[#1a1a1a90]">UI/UX Designer & Developer</p>
                         </div>
                     </div>
                 </div>
@@ -145,7 +219,7 @@ export const WhoIam = () => {
                 <div className="col-span-1 md:col-span-7 flex flex-col gap-10">
 
                     {/* Paragraph description */}
-                    <p className="text-[16px] md:text-[20px] leading-relaxed text-[#1a1a1a70] font-medium ">
+                    <p className="who-desc text-[16px] md:text-[20px] leading-relaxed text-[#1a1a1a70] font-medium ">
                         I'm <strong className="font-semibold text-[#1a1a1a]">Kuberan</strong>, a Frontend Developer and UI/UX Designer passionate about building modern web and mobile experiences. With a background in Computer Science and hands-on industry experience, I focus on creating intuitive interfaces, scalable applications, and impactful digital products.
                     </p>
 
@@ -156,7 +230,7 @@ export const WhoIam = () => {
                             return (
                                 <div
                                     key={item.id}
-                                    className="w-full rounded-[24px] border border-[#1a1a1a10] bg-white shadow-[0_12px_12px_rgba(0,0,0,0.04)] overflow-hidden transition-all duration-300"
+                                    className="who-accordion-item w-full rounded-[24px] border border-[#1a1a1a10] bg-white shadow-[0_12px_12px_rgba(0,0,0,0.04)] overflow-hidden transition-all duration-300"
                                 >
                                     {/* Header / Button */}
                                     <button
@@ -188,14 +262,19 @@ export const WhoIam = () => {
                                     </button>
 
                                     {/* Expanded Content wrapper with clean height transition */}
-                                    <div
-                                        className={`transition-all duration-300 ease-in-out ${isOpen ? "max-h-[200px] " : "max-h-0"
-                                            } overflow-hidden`}
-                                    >
-                                        <p className="p-5 text-sm md:text-base text-[#1a1a1a70] leading-relaxed">
-                                            {item.content}
-                                        </p>
-                                    </div>
+                                     <div
+                                         className={`grid transition-all duration-500 ease-in-out ${
+                                             isOpen 
+                                                 ? "grid-rows-[1fr] opacity-100" 
+                                                 : "grid-rows-[0fr] opacity-0"
+                                         }`}
+                                     >
+                                         <div className="overflow-hidden">
+                                             <p className="p-5 text-sm md:text-base text-[#1a1a1a70] leading-relaxed">
+                                                 {item.content}
+                                             </p>
+                                         </div>
+                                     </div>
                                 </div>
                             );
                         })}
